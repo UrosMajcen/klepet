@@ -93,13 +93,21 @@ $(document).ready(function() {
       $('#poslji-sporocilo').focus();
     });
   });
+  
 
   socket.on('uporabniki', function(uporabniki) {
     $('#seznam-uporabnikov').empty();
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+  
+    //funcija 1. naloga
+    $('#seznam-uporabnikov div').click(function() {
+      var uporabnik = $(this).text()
+      $('#poslji-sporocilo').val('/zasebno "' + uporabnik + '" ');
+      $('#poslji-sporocilo').focus();
   });
+});
 
   setInterval(function() {
     socket.emit('kanali');
