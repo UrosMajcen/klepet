@@ -101,7 +101,6 @@ $(document).ready(function() {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
   
-    //funcija 1. naloga
     $('#seznam-uporabnikov div').click(function() {
       var uporabnik = $(this).text()
       $('#poslji-sporocilo').val('/zasebno "' + uporabnik + '" ');
