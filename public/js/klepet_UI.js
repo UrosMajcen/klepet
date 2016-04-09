@@ -1,5 +1,12 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  var jeSlika = vsebujeSliko(sporocilo);
+  var vrni;
+  if (jeSlika){
+    console.log("jeSlika");
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  }
   if (jeSmesko) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
@@ -15,6 +22,7 @@ function divElementHtmlTekst(sporocilo) {
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
+  sporocilo = dodajSlike(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -50,6 +58,30 @@ function filtirirajVulgarneBesede(vhod) {
     });
   }
   return vhod;
+}
+
+// funkcija za prepoznavanje slik
+function dodajSlike(besedilo) {
+  //console.log("pride v funkcijo")
+  if (vsebujeSliko(besedilo)){
+    var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi'));
+    var izpis = "<img src='"+ slika + "' id='slika' />";
+    return besedilo + izpis;
+  }
+  else {
+    return besedilo;
+  }
+}
+
+//funkcija za dodajanje slik
+function vsebujeSliko(besedilo) {
+  var izraz = new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi');
+  if (besedilo.search(izraz) > -1) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
 $(document).ready(function() {
