@@ -5,6 +5,11 @@ function divElementEnostavniTekst(sporocilo) {
     while (sporocilo.search('&lt') > -1){
       sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
     }
+  var jeVideo = vsebujeVideo(sporocilo);
+  if (jeVideo) {
+    while (sporocilo.search('&lt') > -1) {
+      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>').replace(',','');
+    }
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
   if (jeSmesko) {
@@ -24,6 +29,7 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
   sporocilo = dodajSlike(sporocilo);
+  sporocilo = dodajVideo(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -182,4 +188,51 @@ function dodajSmeske(vhodnoBesedilo) {
       preslikovalnaTabela[smesko] + "' />");
   }
   return vhodnoBesedilo;
+}
+
+function dodajVideo(besedilo) {
+  if (vsebujeVideo(besedilo)){
+    //var text = besedilo;
+    var video = besedilo.match(new RegExp('\\b' + 'https://www.youtube.com/watch?.*', 'gi'));
+    video = video[0];
+    //console.log(video[0]);
+    while(video.search(new RegExp('\\b' + 'https://', 'gi')) > -1) {
+    //  var iskanje = video.search(new RegExp('\\b' + 'https://', 'gi'));
+      //if (iskanje == 0) {
+      video = video.replace("https://www.youtube.com/watch?v=", "->>");
+      //} else {
+      //  video = video.substring(iskanje);
+     // }
+    //console.log(video);
+    }
+    var tmp = video;
+    var tabela = tmp.split(" ");
+    var izpis = new Array(tabela.length);
+    for (var i = 0; i < tabela.length; i++){
+      if (tabela[i].search('->>') == 0){
+        tabela[i] = tabela[i].replace('->>','');
+        izpis[i] = "<iframe id='video' src='https://www.youtube.com/embed/" + tabela[i] + "' allowfullscreen></iframe>";
+      } else {
+        izpis[i] = ""; 
+      }
+    }
+    var vrni = izpis[0];
+    for (var i = 1; i < tabela.length; i++) {
+      vrni = vrni + izpis[i];
+    }
+    return besedilo + vrni;
+  }
+  else {
+    return besedilo;
+  }
+}
+
+function vsebujeVideo(besedilo) {
+  var izraz = new RegExp('\\b' + 'https://www.youtube.com/watch?', 'gi');
+  if (besedilo.search(izraz) > -1) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
