@@ -5,6 +5,9 @@ function divElementEnostavniTekst(sporocilo) {
     while (sporocilo.search('&lt') > -1){
       sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
     }
+    console.log(sporocilo);
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  }
   var jeVideo = vsebujeVideo(sporocilo);
   if (jeVideo) {
     while (sporocilo.search('&lt') > -1) {
@@ -20,7 +23,6 @@ function divElementEnostavniTekst(sporocilo) {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
 }
-
 function divElementHtmlTekst(sporocilo) {
   return $('<div></div>').html('<i>' + sporocilo + '</i>');
 }
@@ -71,7 +73,7 @@ function filtirirajVulgarneBesede(vhod) {
 function dodajSlike(besedilo) {
   //console.log("pride v funkcijo")
   if (vsebujeSliko(besedilo)){
-    var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi'));
+    var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi'));
     var tmp = slika[0];
     var tabela = tmp.split(" ");
     var izpis = new Array(tabela.length);
@@ -80,7 +82,8 @@ function dodajSlike(besedilo) {
     }
     var vrni = izpis[0];
     for (var i = 1; i < tabela.length; i++) {
-      if(izpis[i].search("<img src='http") == 0){
+      console.log(izpis[i]);
+      if(izpis[i].search(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi')) == 0){
       vrni = vrni + izpis[i];
       }
     }
