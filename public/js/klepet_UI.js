@@ -70,7 +70,6 @@ function filtirirajVulgarneBesede(vhod) {
 
 // funkcija za prepoznavanje slik
 function dodajSlike(besedilo) {
-  //console.log("pride v funkcijo")
   if (vsebujeSliko(besedilo)){
     var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi'));
     var tmp = slika[0];
@@ -80,13 +79,24 @@ function dodajSlike(besedilo) {
       izpis[i] = "<img src='"+ tabela[i] + "' id='slika' />";
     }
     var vrni = "";
+    if(jeZasebno(besedilo)){
+        for(var j = 0; j < 2; j++){
+          besedilo = besedilo.replace('"', '');
+        }
+      }
     for (var i = 0; i < tabela.length; i++) {
       //console.log(izpis[i]);
       if(izpis[i].search(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi')) > -1){
       vrni = vrni + izpis[i];
       }
     }
+    if (jeZasebno(besedilo)){
+      var zasebno = besedilo.split(" ");
+      besedilo = besedilo.replace('/zasebno', '').replace(zasebno[1], '');
+      return '/zasebno "' + zasebno[1] + '" "' + besedilo + vrni+ '"';
+    } else {
     return besedilo + vrni;
+    }
   }
   else {
     return besedilo;
@@ -100,6 +110,14 @@ function vsebujeSliko(besedilo) {
     return true;
   }
   else {
+    return false;
+  }
+}
+
+function jeZasebno(besedilo) {
+  if (besedilo.search(new RegExp('/zasebno', 'gi')) > -1){
+    return true;
+  } else {
     return false;
   }
 }
@@ -203,7 +221,11 @@ function dodajSmeske(vhodnoBesedilo) {
 
 function dodajVideo(besedilo) {
   if (vsebujeVideo(besedilo)){
-    //var text = besedilo;
+    if (jeZasebno(besedilo)) {
+      for (var i = 0; i < 4; i++){
+        besedilo = besedilo.replace('"', '');
+      }
+    }
     var video = besedilo.match(new RegExp('\\b' + 'https://www.youtube.com/watch?.*', 'gi'));
     video = video[0];
     while(video.search(new RegExp('\\b' + 'https://', 'gi')) > -1) {
@@ -224,8 +246,14 @@ function dodajVideo(besedilo) {
     for (var i = 0; i < tabela.length; i++) {
       vrni = vrni + izpis[i];
     }
-    console.log(besedilo+vrni);
-    return besedilo + vrni;
+    if (jeZasebno(besedilo)){
+      var zasebno = besedilo.split(" ");
+      console.log(zasebno[1]);
+      besedilo = besedilo.replace('/zasebno', '').replace(zasebno[1], '');
+      return '/zasebno "' + zasebno[1] + '" "' + besedilo + vrni + '"';
+    } else {
+      return besedilo + vrni;
+    }
   }
   else {
     return besedilo;
