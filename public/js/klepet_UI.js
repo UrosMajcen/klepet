@@ -161,6 +161,16 @@ $(document).ready(function() {
   });
 });
 
+  
+  socket.on('dregljaj', function() {
+      console.log("x");
+      $('#vsebina').jrumble();
+      //začni z tresenjem
+      $('#vsebina').trigger('startRumble');
+      //zakasni in ustavi tresenje
+      setTimeout(function () {$('#vsebina').trigger('stopRumble')}, 1500);
+  });
+
   setInterval(function() {
     socket.emit('kanali');
     socket.emit('uporabniki', {kanal: trenutniKanal});
