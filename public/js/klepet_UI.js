@@ -5,7 +5,7 @@ function divElementEnostavniTekst(sporocilo) {
     while (sporocilo.search('&lt') > -1) {
       sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>').replace(',','');
     }
-    console.log(sporocilo);
+    //console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
   if (jeSmesko) {
@@ -150,7 +150,7 @@ function dodajVideo(besedilo) {
     while(video.search(new RegExp('\\b' + 'https://', 'gi')) > -1) {
     //  var iskanje = video.search(new RegExp('\\b' + 'https://', 'gi'));
       //if (iskanje == 0) {
-      video = video.replace("https://www.youtube.com/watch?v=", "");
+      video = video.replace("https://www.youtube.com/watch?v=", "->>");
       //} else {
       //  video = video.substring(iskanje);
      // }
@@ -160,7 +160,12 @@ function dodajVideo(besedilo) {
     var tabela = tmp.split(" ");
     var izpis = new Array(tabela.length);
     for (var i = 0; i < tabela.length; i++){
-      izpis[i] = "<iframe id='video' src='https://www.youtube.com/embed/" + tabela[i] + "' allowfullscreen></iframe>";
+      if (tabela[i].search('->>') == 0){
+        tabela[i] = tabela[i].replace('->>','');
+        izpis[i] = "<iframe id='video' src='https://www.youtube.com/embed/" + tabela[i] + "' allowfullscreen></iframe>";
+      } else {
+        izpis[i] = ""; 
+      }
     }
     var vrni = izpis[0];
     for (var i = 1; i < tabela.length; i++) {
