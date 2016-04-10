@@ -1,13 +1,15 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var jeSlika = vsebujeSliko(sporocilo);
-  var vrni;
   if (jeSlika){
-    console.log("jeSlika");
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
+    while (sporocilo.search('&lt') > -1){
+      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
+    }
+    console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
   if (jeSmesko) {
+    
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
@@ -65,7 +67,14 @@ function dodajSlike(besedilo) {
   //console.log("pride v funkcijo")
   if (vsebujeSliko(besedilo)){
     var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi'));
-    var izpis = "<img src='"+ slika + "' id='slika' />";
+    var tmp = slika[0];
+    var tabela = tmp.split(" ");
+    //console.log(tabela.length);
+    var izpis = new Array(tabela.length);
+    for (var i = 0; i < tabela.length; i++) {
+      izpis[i] = "<img src='"+ tabela[i] + "' id='slika' />";
+      //console.log(izpis[i])
+    }
     return besedilo + izpis;
   }
   else {
@@ -155,7 +164,8 @@ function dodajSmeske(vhodnoBesedilo) {
     "(y)": "like.png",
     ":*": "kiss.png",
     ":(": "sad.png"
-  }
+  };
+  
   for (var smesko in preslikovalnaTabela) {
     vhodnoBesedilo = vhodnoBesedilo.replace(smesko,
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
