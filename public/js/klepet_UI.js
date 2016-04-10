@@ -2,7 +2,7 @@ function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var jeVideo = vsebujeVideo(sporocilo);
   if (jeVideo) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullsceen&gt;', 'allowfullsceen>').replace('&lt;/iframe&gt;', '</iframe>');
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>');
     console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
@@ -144,6 +144,7 @@ function dodajVideo(besedilo) {
     var video = besedilo.match(new RegExp('\\b' + 'https://www.youtube.com/watch?.*', 'gi'));
     video = besedilo.replace("https://www.youtube.com/watch?v=", "");
     var izpis = "<iframe id='video' src='https://www.youtube.com/embed/" + video + "' allowfullscreen></iframe>";
+    //console.log(izpis);
     return besedilo + izpis;
   }
   else {
