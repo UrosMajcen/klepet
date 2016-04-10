@@ -1,6 +1,14 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  var jeSlika = vsebujeSliko(sporocilo);
+  if (jeSlika){
+    while (sporocilo.search('&lt') > -1){
+      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
+    }
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  }
   if (jeSmesko) {
+    
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
@@ -15,6 +23,7 @@ function divElementHtmlTekst(sporocilo) {
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
+  sporocilo = dodajSlike(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -50,6 +59,41 @@ function filtirirajVulgarneBesede(vhod) {
     });
   }
   return vhod;
+}
+
+// funkcija za prepoznavanje slik
+function dodajSlike(besedilo) {
+  //console.log("pride v funkcijo")
+  if (vsebujeSliko(besedilo)){
+    var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi'));
+    var tmp = slika[0];
+    var tabela = tmp.split(" ");
+    var izpis = new Array(tabela.length);
+    for (var i = 0; i < tabela.length; i++) {
+      izpis[i] = "<img src='"+ tabela[i] + "' id='slika' />";
+    }
+    var vrni = izpis[0];
+    for (var i = 1; i < tabela.length; i++) {
+      if(izpis[i].search("<img src='http") == 0){
+      vrni = vrni + izpis[i];
+      }
+    }
+    return besedilo + vrni;
+  }
+  else {
+    return besedilo;
+  }
+}
+
+//funkcija za dodajanje slik
+function vsebujeSliko(besedilo) {
+  var izraz = new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi');
+  if (besedilo.search(izraz) > -1) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
 $(document).ready(function() {
@@ -130,7 +174,8 @@ function dodajSmeske(vhodnoBesedilo) {
     "(y)": "like.png",
     ":*": "kiss.png",
     ":(": "sad.png"
-  }
+  };
+  
   for (var smesko in preslikovalnaTabela) {
     vhodnoBesedilo = vhodnoBesedilo.replace(smesko,
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
