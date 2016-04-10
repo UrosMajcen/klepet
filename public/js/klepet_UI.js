@@ -5,13 +5,12 @@ function divElementEnostavniTekst(sporocilo) {
     while (sporocilo.search('&lt') > -1){
       sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
     }
-    console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
   var jeVideo = vsebujeVideo(sporocilo);
   if (jeVideo) {
     while (sporocilo.search('&lt') > -1) {
-      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>').replace(',','');
+      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>');
     }
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
@@ -80,10 +79,10 @@ function dodajSlike(besedilo) {
     for (var i = 0; i < tabela.length; i++) {
       izpis[i] = "<img src='"+ tabela[i] + "' id='slika' />";
     }
-    var vrni = izpis[0];
-    for (var i = 1; i < tabela.length; i++) {
-      console.log(izpis[i]);
-      if(izpis[i].search(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi')) == 0){
+    var vrni = "";
+    for (var i = 0; i < tabela.length; i++) {
+      //console.log(izpis[i]);
+      if(izpis[i].search(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi')) > -1){
       vrni = vrni + izpis[i];
       }
     }
@@ -96,7 +95,7 @@ function dodajSlike(besedilo) {
 
 //funkcija za dodajanje slik
 function vsebujeSliko(besedilo) {
-  var izraz = new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi');
+  var izraz = new RegExp('\\b' + '(http|https)://.*.(gif|jpg|png)', 'gi');
   if (besedilo.search(izraz) > -1) {
     return true;
   }
@@ -163,7 +162,6 @@ $(document).ready(function() {
 
   
   socket.on('dregljaj', function() {
-      console.log("x");
       $('#vsebina').jrumble();
       //začni z tresenjem
       $('#vsebina').trigger('startRumble');
@@ -208,31 +206,25 @@ function dodajVideo(besedilo) {
     //var text = besedilo;
     var video = besedilo.match(new RegExp('\\b' + 'https://www.youtube.com/watch?.*', 'gi'));
     video = video[0];
-    //console.log(video[0]);
     while(video.search(new RegExp('\\b' + 'https://', 'gi')) > -1) {
-    //  var iskanje = video.search(new RegExp('\\b' + 'https://', 'gi'));
-      //if (iskanje == 0) {
       video = video.replace("https://www.youtube.com/watch?v=", "->>");
-      //} else {
-      //  video = video.substring(iskanje);
-     // }
-    //console.log(video);
     }
     var tmp = video;
     var tabela = tmp.split(" ");
     var izpis = new Array(tabela.length);
     for (var i = 0; i < tabela.length; i++){
       if (tabela[i].search('->>') == 0){
-        tabela[i] = tabela[i].replace('->>','');
+        tabela[i] = tabela[i].replace('->>','').replace('<img','');
         izpis[i] = "<iframe id='video' src='https://www.youtube.com/embed/" + tabela[i] + "' allowfullscreen></iframe>";
       } else {
         izpis[i] = ""; 
       }
     }
-    var vrni = izpis[0];
-    for (var i = 1; i < tabela.length; i++) {
+    var vrni = "";
+    for (var i = 0; i < tabela.length; i++) {
       vrni = vrni + izpis[i];
     }
+    console.log(besedilo+vrni);
     return besedilo + vrni;
   }
   else {
