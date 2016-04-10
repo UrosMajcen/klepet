@@ -5,7 +5,6 @@ function divElementEnostavniTekst(sporocilo) {
     while (sporocilo.search('&lt') > -1){
       sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('\'slika\' /&gt;', '\'slika\' />');
     }
-    console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
   if (jeSmesko) {
@@ -69,13 +68,17 @@ function dodajSlike(besedilo) {
     var slika = besedilo.match(new RegExp('\\b' + '(http|https)://.*.(gif|jpg|gif)', 'gi'));
     var tmp = slika[0];
     var tabela = tmp.split(" ");
-    //console.log(tabela.length);
     var izpis = new Array(tabela.length);
     for (var i = 0; i < tabela.length; i++) {
       izpis[i] = "<img src='"+ tabela[i] + "' id='slika' />";
-      //console.log(izpis[i])
     }
-    return besedilo + izpis;
+    var vrni = izpis[0];
+    for (var i = 1; i < tabela.length; i++) {
+      if(izpis[i].search("<img src='http") == 0){
+      vrni = vrni + izpis[i];
+      }
+    }
+    return besedilo + vrni;
   }
   else {
     return besedilo;
