@@ -2,7 +2,9 @@ function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var jeVideo = vsebujeVideo(sporocilo);
   if (jeVideo) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>');
+    while (sporocilo.search('&lt') > -1) {
+      sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;iframe', '<iframe').replace('allowfullscreen&gt;', 'allowfullscreen>').replace('&lt;/iframe&gt;', '</iframe>').replace(',','');
+    }
     console.log(sporocilo);
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
@@ -141,11 +143,30 @@ function dodajSmeske(vhodnoBesedilo) {
 
 function dodajVideo(besedilo) {
   if (vsebujeVideo(besedilo)){
+    //var text = besedilo;
     var video = besedilo.match(new RegExp('\\b' + 'https://www.youtube.com/watch?.*', 'gi'));
-    video = besedilo.replace("https://www.youtube.com/watch?v=", "");
-    var izpis = "<iframe id='video' src='https://www.youtube.com/embed/" + video + "' allowfullscreen></iframe>";
-    //console.log(izpis);
-    return besedilo + izpis;
+    video = video[0];
+    //console.log(video[0]);
+    while(video.search(new RegExp('\\b' + 'https://', 'gi')) > -1) {
+    //  var iskanje = video.search(new RegExp('\\b' + 'https://', 'gi'));
+      //if (iskanje == 0) {
+      video = video.replace("https://www.youtube.com/watch?v=", "");
+      //} else {
+      //  video = video.substring(iskanje);
+     // }
+    //console.log(video);
+    }
+    var tmp = video;
+    var tabela = tmp.split(" ");
+    var izpis = new Array(tabela.length);
+    for (var i = 0; i < tabela.length; i++){
+      izpis[i] = "<iframe id='video' src='https://www.youtube.com/embed/" + tabela[i] + "' allowfullscreen></iframe>";
+    }
+    var vrni = izpis[0];
+    for (var i = 1; i < tabela.length; i++) {
+      vrni = vrni + izpis[i];
+    }
+    return besedilo + vrni;
   }
   else {
     return besedilo;
